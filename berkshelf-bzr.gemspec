@@ -1,23 +1,25 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'berkshelf/hg/version'
+require 'berkshelf/bzr/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'berkshelf-hg'
-  spec.version       = Berkshelf::Hg::VERSION
+  spec.name          = 'berkshelf-bzr'
+  spec.version       = Berkshelf::Bzr::VERSION
   spec.authors       = [
+    'David Chauviere',
     'Seth Vargo',
-    'Manuel Ryan',
+    'Manuel Ryan'
   ]
   spec.email         = [
+    'd_chauviere@yahoo.fr',
     'sethvargo@gmail.com',
-    'ryan@shamu.ch',
+    'ryan@shamu.ch'
   ]
-  spec.summary       = 'Mercurial (hg) support for Berkshelf'
+  spec.summary       = 'Bazaar support for Berkshelf'
   spec.description   = 'A Berkshelf plugin that adds support for downloading ' \
-                       'Chef cookbooks from Mercurial (hg) locations.'
-  spec.homepage      = 'https://github.com/berkshelf/berkshelf-hg'
+                       'Chef cookbooks from Bazaar locations.'
+  spec.homepage      = 'https://github.com/Da-Wei/berkshelf-bzr'
   spec.license       = 'Apache 2.0'
 
   spec.files         = `git ls-files`.split($/)

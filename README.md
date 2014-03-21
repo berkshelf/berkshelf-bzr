@@ -1,15 +1,14 @@
-Berkshelf Hg
+Berkshelf Bzr
 ============
-[![Gem Version](https://badge.fury.io/rb/berkshelf-hg.png)](http://badge.fury.io/rb/berkshelf-hg)
-[![Build Status](https://travis-ci.org/berkshelf/berkshelf-hg.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf-hg)
+[![Gem Version](https://badge.fury.io/rb/berkshelf-bzr.png)](http://badge.fury.io/rb/berkshelf-bzr)
 
-Berkshelf Hg (or Berkshelf Mercurial) is a Berkshelf extension that adds support for downloading cookbooks from Mercurial locations.
+Berkshelf Bzr is a Berkshelf extension that adds support for downloading cookbooks from Bazaar locations.
 
 Installation
 ------------
 Add this line to your application's Gemfile:
 
-    gem 'berkshelf-hg'
+    gem 'berkshelf-bzr'
 
 And then execute:
 
@@ -17,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install berkshelf-hg
+    $ gem install berkshelf-bzr
 
 Usage
 -----
@@ -25,27 +24,29 @@ Activate the extension in your `Berksfile`:
 
 ```ruby
 source 'https://api.berkshelf.com'
-extension 'hg'
+extension 'bzr'
 ```
 
-Use the exposed `:hg` key to define your sources:
+Use the exposed `:bzr` key to define your sources:
 
 ```ruby
-cookbook 'bacon', hg: 'https://bitbucket.org/meats/bacon'
+cookbook 'bacon', bzr: 'https://bitbucket.org/meats/bacon'
 ```
 
-You may also specify a `branch` or `tag`:
+You may also specify a `ref` (see output of bzr help revisionspec):
 
 ```ruby
-cookbook 'bacon', hg: 'https://bitbucket.org/meats/bacon', branch: 'crispy'
+cookbook 'bacon', bzr: 'https://bitbucket.org/meats/bacon', ref: 'revno:7'
 ```
 
 License & Authors
 -----------------
+- Author: David Chauviere (d_chauviere@yahoo.fr)
 - Author: Seth Vargo (sethvargo@gmail.com)
 - Author: Manuel Ryan (ryan@shamu.ch)
 
 ```text
+Copyright 2014 David Chauviere
 Copyright 2014 Seth Vargo
 Copyright 2013-2014 Manual Ryan
 
