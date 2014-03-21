@@ -1,68 +1,32 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe HgLocation do
+  describe BzrLocation do
     let(:dependency) { double(name: 'bacon') }
 
     subject do
-      described_class.new(dependency, hg: 'https://repo.com', branch: 'ham',
-        tag: 'v1.2.3', ref: 'abc123', revision: 'defjkl123456', rel: 'hi')
+      described_class.new(dependency, bzr: 'https://repo.com', 
+                          ref: 'abc123', revid: 'test@test.net-20140320213448-r0103d8bgjlu5jyz')
     end
 
     describe '.initialize' do
       it 'sets the uri' do
-        instance = described_class.new(dependency, hg: 'https://repo.com')
+        instance = described_class.new(dependency, bzr: 'https://repo.com')
         expect(instance.uri).to eq('https://repo.com')
       end
 
-      it 'sets the branch' do
+      it 'sets the ref' do
         instance = described_class.new(dependency,
-          hg: 'https://repo.com', branch: 'magic_new_feature')
-        expect(instance.branch).to eq('magic_new_feature')
+          bzr: 'https://repo.com', ref: 'revno:2')
+        expect(instance.ref).to eq('revno:2')
       end
 
-      it 'sets the tag' do
+      it 'sets the revid' do
         instance = described_class.new(dependency,
-          hg: 'https://repo.com', tag: 'v1.2.3')
-        expect(instance.tag).to eq('v1.2.3')
+          bzr: 'https://repo.com', revid: 'test@test.net-20140320213448-r0103d8bgjlu5jyz')
+        expect(instance.revid).to eq('test@test.net-20140320213448-r0103d8bgjlu5jyz')
       end
 
-      context 'ref' do
-        it 'uses the :ref option with priority' do
-          instance = described_class.new(dependency,
-            hg: 'https://repo.com', ref: 'abc123', branch: 'magic_new_feature')
-          expect(instance.ref).to eq('abc123')
-        end
-
-        it 'uses the :branch option with priority' do
-          instance = described_class.new(dependency,
-            hg: 'https://repo.com', branch: 'magic_new_feature', tag: 'v1.2.3')
-          expect(instance.ref).to eq('magic_new_feature')
-        end
-
-        it 'uses the :tag option' do
-          instance = described_class.new(dependency,
-            hg: 'https://repo.com', tag: 'v1.2.3')
-          expect(instance.ref).to eq('v1.2.3')
-        end
-
-        it 'uses "default" when none is given' do
-          instance = described_class.new(dependency, hg: 'https://repo.com')
-          expect(instance.ref).to eq('default')
-        end
-      end
-
-      it 'sets the revision' do
-        instance = described_class.new(dependency,
-          hg: 'https://repo.com', revision: 'abcde12345')
-        expect(instance.revision).to eq('abcde12345')
-      end
-
-      it 'sets the rel' do
-        instance = described_class.new(dependency,
-          hg: 'https://repo.com', rel: 'internal/path')
-        expect(instance.rel).to eq('internal/path')
-      end
     end
 
     describe '#download' do
@@ -71,7 +35,7 @@ module Berkshelf
         FileUtils.stub(:cp_r)
         subject.stub(:validate_cached!)
         subject.stub(:validate_cookbook!)
-        subject.stub(:hg)
+        subject.stub(:bzr)
       end
 
       context 'when the cookbook is already installed' do
@@ -79,7 +43,7 @@ module Berkshelf
           subject.stub(:installed?).and_return(true)
           expect(CachedCookbook).to receive(:from_store_path)
           expect(subject).to receive(:validate_cached!)
-          expect(subject).to_not receive(:hg)
+          expect(subject).to_not receive(:bzr)
           subject.download
         end
       end
@@ -88,7 +52,7 @@ module Berkshelf
         it 'pulls a new version' do
           Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
           subject.stub(:cached?).and_return(true)
-          expect(subject).to receive(:hg).with('pull')
+          expect(subject).to receive(:bzr).with('pull')
           subject.download
         end
       end
@@ -96,7 +60,7 @@ module Berkshelf
       context 'when the revision is not cached' do
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
-          expect(subject).to receive(:hg).with('update --clean --rev defjkl123456')
+          expect(subject).to receive(:bzr).with('pull -r revid:david@chauviere.net-20140320213448-r0103d8bgjlu5jyz')
           subject.download
         end
       end
@@ -104,7 +68,7 @@ module Berkshelf
 
     describe '#scm_location?' do
       it 'returns true' do
-        instance = described_class.new(dependency, hg: 'https://repo.com')
+        instance = described_class.new(dependency, bzr: 'https://repo.com')
         expect(instance).to be_scm_location
       end
     end
@@ -116,7 +80,7 @@ module Berkshelf
         expect(subject).to eq(other)
       end
 
-      it 'returns false when the other location is not an HgLocation' do
+      it 'returns false when the other location is not an BzrLocation' do
         other.stub(:is_a?).and_return(false)
         expect(subject).to_not eq(other)
       end
@@ -126,23 +90,8 @@ module Berkshelf
         expect(subject).to_not eq(other)
       end
 
-      it 'returns false when the branch is different' do
-        other.stub(:branch).and_return('different')
-        expect(subject).to_not eq(other)
-      end
-
-      it 'returns false when the tag is different' do
-        other.stub(:tag).and_return('different')
-        expect(subject).to_not eq(other)
-      end
-
       it 'returns false when the ref is different' do
         other.stub(:ref).and_return('different')
-        expect(subject).to_not eq(other)
-      end
-
-      it 'returns false when the rel is different' do
-        other.stub(:rel).and_return('different')
         expect(subject).to_not eq(other)
       end
     end
