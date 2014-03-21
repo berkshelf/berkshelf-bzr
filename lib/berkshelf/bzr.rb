@@ -1,5 +1,5 @@
-require 'berkshelf/hg/version'
+require 'berkshelf/bzr/version'
 
 module Berkshelf
-  autoload :HgLocation, 'berkshelf/locations/hg'
+  autoload :BzrLocation, 'berkshelf/locations/bzr'
 end
