@@ -29,12 +29,12 @@ module Berkshelf
     def initialize(dependency, options = {})
       super
 
-      @uri      = options[:hg]
+      @uri      = options[:bzr]
       @revid    = options[:revid]
       @ref      = options[:revid] || options[:ref] || 'last:'
     end
 
-    # Download the cookbook from the remote hg repository
+    # Download the cookbook from the remote bzr repository
     #
     # @return [CachedCookbook]
     def download
@@ -51,10 +51,7 @@ module Berkshelf
       else
         # Ensure the cache directory is present before doing anything
         FileUtils.mkdir_p(cache_path.dirname)
-
-        Dir.chdir(cache_path) do
-          bzr %|branch -r #{ref} #{uri} #{cache_path}|
-        end
+        bzr %|branch -r #{ref} #{uri} #{cache_path}|
       end
 
       Dir.chdir(cache_path) do
@@ -157,7 +154,7 @@ module Berkshelf
         .join("#{dependency.name}-#{revid.gsub('-', '_')}")
     end
 
-    # The path where this hg repository is cached.
+    # The path where this bazaar repository is cached.
     #
     # @return [Pathname]
     def cache_path
