@@ -1,24 +1,24 @@
-Feature: Installing from a mercurial location
+Feature: Installing from a bazaar location
   Scenario: In the default scenario
-    * a remote mercurial cookbook named "fake"
+    * a remote bazaar cookbook named "fake"
     * I write to "Berksfile" with:
       """
       source 'https://api.berkshelf.com'
-      extension 'hg'
+      extension 'bzr'
 
-      cookbook 'fake', hg: "file://localhost#{Dir.pwd}/hg-cookbooks/fake"
+      cookbook 'fake', bzr: "file://localhost#{Dir.pwd}/bzr-cookbooks/fake"
       """
     * I successfully run `berks install`
     * the output should contain "Using fake (1.0.0)"
 
-  Scenario: When a branch is given
-    * a remote mercurial cookbook named "fake" with a branch named "development"
+  Scenario: When a ref is given
+    * a remote bazaar cookbook named "fake" with a ref named "revno:2"
     * I write to "Berksfile" with:
       """
       source 'https://api.berkshelf.com'
-      extension 'hg'
+      extension 'bzr'
 
-      cookbook 'fake', hg: "file://localhost#{Dir.pwd}/hg-cookbooks/fake", branch: 'development'
+      cookbook 'fake', hg: "file://localhost#{Dir.pwd}/bzr-cookbooks/fake", ref: 'revno:2'
       """
     * I successfully run `berks install`
     * the output should contain "Using fake (2.3.4)"

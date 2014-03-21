@@ -1,9 +1,9 @@
-Given /^a remote mercurial cookbook named "(\w+)"$/ do |name|
-  path = File.join(tmp_path, 'hg-cookbooks', name)
+Given /^a remote bazaar cookbook named "(\w+)"$/ do |name|
+  path = File.join(tmp_path, 'bzr-cookbooks', name)
   FileUtils.mkdir_p(path)
 
   Dir.chdir(path) do
-    hg('init')
+    bzr('init')
 
     File.open('metadata.rb', 'w') do |f|
       f.write <<-EOH
@@ -12,18 +12,16 @@ Given /^a remote mercurial cookbook named "(\w+)"$/ do |name|
       EOH
     end
 
-    hg('add')
-    hg_commit('Initial commit')
+    bzr('add')
+    bzr_commit('Initial commit')
   end
 end
 
-Given /^a remote mercurial cookbook named "(\w+)" with a branch named "(\w+)"$/ do |name, branch|
-  path = File.join(tmp_path, 'hg-cookbooks', name)
-  steps %Q|Given a remote mercurial cookbook named "#{name}"|
+Given /^a remote bazaar cookbook named "(\w+)" with a ref named "(\w+)"$/ do |name, ref|
+  path = File.join(tmp_path, 'bzr-cookbooks', name)
+  steps %Q|Given a remote bazaar cookbook named "#{name}"|
 
   Dir.chdir(path) do
-    hg("branch #{branch}")
-
     File.open('metadata.rb', 'w') do |f|
       f.write <<-EOH
         name '#{name}'
@@ -31,15 +29,15 @@ Given /^a remote mercurial cookbook named "(\w+)" with a branch named "(\w+)"$/ 
       EOH
     end
 
-    hg('add')
-    hg_commit('More changes')
+    bzr('add')
+    bzr_commit('More changes')
   end
 end
 
-def hg(command)
-  %x|hg #{command}|
+def bzr(command)
+  %x|bzr #{command}|
 end
 
-def hg_commit(message)
-  hg %|--config ui.username=Berkshelf commit --message "#{message}"|
+def bzr_commit(message)
+  bzr %|commit -m "#{message}"|
 end
