@@ -23,15 +23,15 @@ module Berkshelf
     end
 
     attr_reader :uri
-    attr_reader :revid
+    attr_reader :revision
     attr_reader :ref
 
     def initialize(dependency, options = {})
       super
 
       @uri      = options[:bzr]
-      @revid    = options[:revid]
-      @ref      = options[:revid] || options[:ref] || 'last:'
+      @revision    = options[:revision]
+      @ref      = options[:ref] || 'last:'
     end
 
     # Download the cookbook from the remote bzr repository
@@ -46,21 +46,22 @@ module Berkshelf
       if cached?
         # Update and checkout the correct ref
         Dir.chdir(cache_path) do
-          bzr %|pull -r #{ref}|
+          bzr %|pull|
         end
       else
         # Ensure the cache directory is present before doing anything
         FileUtils.mkdir_p(cache_path.dirname)
-        bzr %|branch -r #{ref} #{uri} #{cache_path}|
+        bzr %|branch #{uri} #{cache_path}|
       end
 
       Dir.chdir(cache_path) do
+        bzr %|update -r #{revision || ref}|
         stdout = bzr %|testament --strict|
         testament = stdout.match(/revision-id: (.*)/)
         unless testament[1]
           raise BazaarError.new('Unable to find bazaar revid')
         end
-        @revid ||= testament[1]
+        @revision ||= 'revid:' + testament[1]
       end
 
       # Validate the thing we are copying is a Chef cookbook
@@ -92,17 +93,16 @@ module Berkshelf
     def ==(other)
       other.is_a?(BzrLocation) &&
       other.uri == uri &&
-      other.ref == ref &&
-      other.revid == revid
+      other.ref == ref
     end
 
     def to_s
-      "#{uri} (at revid: #{revid})"
+      "#{uri} (at ref: #{ref[0...7]})"
     end
 
     def to_lock
       out =  "    bzr: #{uri}\n"
-      out << "    revid: #{revid}\n"
+      out << "    revision: #{revision}\n"
       out
     end
 
@@ -142,7 +142,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def installed?
-      revid && install_path.exist?
+      revision && install_path.exist?
     end
 
     # The path where this cookbook would live in the store, if it were
@@ -151,7 +151,7 @@ module Berkshelf
     # @return [Pathname, nil]
     def install_path
       Berkshelf.cookbook_store.storage_path
-        .join("#{dependency.name}-#{revid.gsub('-', '_')}")
+        .join("#{dependency.name}-#{revision.gsub('-', '_')}")
     end
 
     # The path where this bazaar repository is cached.

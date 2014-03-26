@@ -6,7 +6,7 @@ module Berkshelf
 
     subject do
       described_class.new(dependency, bzr: 'https://repo.com', 
-                          ref: 'abc123', revid: 'test@test.net-20140320213448-r0103d8bgjlu5jyz')
+                          ref: 'last:', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
     end
 
     describe '.initialize' do
@@ -17,14 +17,14 @@ module Berkshelf
 
       it 'sets the ref' do
         instance = described_class.new(dependency,
-          bzr: 'https://repo.com', ref: 'revno:2')
+          bzr: 'https://repo.com', revision: 'revno:2')
         expect(instance.ref).to eq('revno:2')
       end
 
-      it 'sets the revid' do
+      it 'sets the revision' do
         instance = described_class.new(dependency,
-          bzr: 'https://repo.com', revid: 'test@test.net-20140320213448-r0103d8bgjlu5jyz')
-        expect(instance.revid).to eq('test@test.net-20140320213448-r0103d8bgjlu5jyz')
+          bzr: 'https://repo.com', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
+        expect(instance.revision).to eq('revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
       end
 
     end
@@ -60,7 +60,7 @@ module Berkshelf
       context 'when the revision is not cached' do
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
-          expect(subject).to receive(:bzr).with('pull -r revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
+          expect(subject).to receive(:bzr).with('update -r revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
           subject.download
         end
       end
@@ -97,8 +97,8 @@ module Berkshelf
     end
 
     describe '#to_s' do
-      it 'gives the revid' do
-        expect(subject.to_s).to eq('https://repo.com (at test@test.net-20140320213448-r0103d8bgjlu5jyz)')
+      it 'gives the ref' do
+        expect(subject.to_s).to eq('https://repo.com (at ref: revno:2)')
       end
     end
 
@@ -106,8 +106,7 @@ module Berkshelf
       it 'includes all the information' do
         expect(subject.to_lock).to eq <<-EOH.gsub(/^ {8}/, '')
             bzr: https://repo.com
-            revid: test@test.net-20140320213448-r0103d8bgjlu5jyz
-            ref: revno:2
+            revision: revid:test@test.net-20140320213448-r0103d8bgjlu5jyz
         EOH
       end
     end
