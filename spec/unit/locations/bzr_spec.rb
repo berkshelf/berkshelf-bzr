@@ -60,7 +60,7 @@ module Berkshelf
       context 'when the revision is not cached' do
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
-          expect(subject).to receive(:bzr).with('pull -r revid:david@chauviere.net-20140320213448-r0103d8bgjlu5jyz')
+          expect(subject).to receive(:bzr).with('pull -r revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
           subject.download
         end
       end
@@ -97,66 +97,33 @@ module Berkshelf
     end
 
     describe '#to_s' do
-      it 'prefers the tag' do
-        expect(subject.to_s).to eq('https://repo.com (at v1.2.3/hi)')
-      end
-
-      it 'prefers the branch' do
-        subject.stub(:tag).and_return(nil)
-        expect(subject.to_s).to eq('https://repo.com (at ham/hi)')
-      end
-
-      it 'falls back to the ref' do
-        subject.stub(:tag).and_return(nil)
-        subject.stub(:branch).and_return(nil)
-        expect(subject.to_s).to eq('https://repo.com (at abc123/hi)')
-      end
-
-      it 'does not use the rel if missing' do
-        subject.stub(:rel).and_return(nil)
-        expect(subject.to_s).to eq('https://repo.com (at v1.2.3)')
+      it 'gives the revid' do
+        expect(subject.to_s).to eq('https://repo.com (at test@test.net-20140320213448-r0103d8bgjlu5jyz)')
       end
     end
 
     describe '#to_lock' do
       it 'includes all the information' do
         expect(subject.to_lock).to eq <<-EOH.gsub(/^ {8}/, '')
-            hg: https://repo.com
-            revision: defjkl123456
-            branch: ham
-            tag: v1.2.3
-            rel: hi
+            bzr: https://repo.com
+            revid: test@test.net-20140320213448-r0103d8bgjlu5jyz
+            ref: revno:2
         EOH
-      end
-
-      it 'does not include the branch if missing' do
-        subject.stub(:branch).and_return(nil)
-        expect(subject.to_lock).to_not include('branch')
-      end
-
-      it 'does not include the tag if missing' do
-        subject.stub(:tag).and_return(nil)
-        expect(subject.to_lock).to_not include('tag')
-      end
-
-      it 'does not include the rel if missing' do
-        subject.stub(:rel).and_return(nil)
-        expect(subject.to_lock).to_not include('rel')
       end
     end
 
-    describe '#hg' do
-      before { described_class.send(:public, :hg) }
+    describe '#bzr' do
+      before { described_class.send(:public, :bzr) }
 
-      it 'raises an error if Mercurial is not installed' do
+      it 'raises an error if Bazaar is not installed' do
         Berkshelf.stub(:which).and_return(false)
-        expect { subject.hg('foo') }.to raise_error(HgLocation::HgNotInstalled)
+        expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrNotInstalled)
       end
 
       it 'raises an error if the command fails' do
         subject.stub(:`)
         $?.stub(:success?).and_return(false)
-        expect { subject.hg('foo') }.to raise_error(HgLocation::HgCommandError)
+        expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrCommandError)
       end
     end
   end
