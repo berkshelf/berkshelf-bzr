@@ -17,7 +17,7 @@ module Berkshelf
 
       it 'sets the ref' do
         instance = described_class.new(dependency,
-          bzr: 'https://repo.com', revision: 'revno:1')
+          bzr: 'https://repo.com', ref: 'revno:1')
         expect(instance.ref).to eq('revno:1')
       end
 
@@ -60,7 +60,7 @@ module Berkshelf
       context 'when the revision is not cached' do
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
-          expect(subject).to receive(:bzr).with('update -r revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
+          expect(subject).to receive(:bzr).with('update -r revno:2')
           subject.download
         end
       end
