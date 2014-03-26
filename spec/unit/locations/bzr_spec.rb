@@ -6,7 +6,7 @@ module Berkshelf
 
     subject do
       described_class.new(dependency, bzr: 'https://repo.com', 
-                          ref: 'last:', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
+                          ref: 'revno:2:', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
     end
 
     describe '.initialize' do
@@ -17,8 +17,8 @@ module Berkshelf
 
       it 'sets the ref' do
         instance = described_class.new(dependency,
-          bzr: 'https://repo.com', revision: 'revno:2')
-        expect(instance.ref).to eq('revno:2')
+          bzr: 'https://repo.com', revision: 'revno:1')
+        expect(instance.ref).to eq('revno:1')
       end
 
       it 'sets the revision' do
