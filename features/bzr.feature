@@ -6,7 +6,7 @@ Feature: Installing from a bazaar location
       source 'https://api.berkshelf.com'
       extension 'bzr'
 
-      cookbook 'fake', bzr: "file://localhost#{Dir.pwd}/bzr-cookbooks/fake"
+      cookbook 'fake', bzr: "#{Dir.pwd}/bzr-cookbooks/fake"
       """
     * I successfully run `berks install`
     * the output should contain "Using fake (1.0.0)"
@@ -18,7 +18,7 @@ Feature: Installing from a bazaar location
       source 'https://api.berkshelf.com'
       extension 'bzr'
 
-      cookbook 'fake', hg: "file://localhost#{Dir.pwd}/bzr-cookbooks/fake", ref: 'revno:2'
+      cookbook 'fake', bzr: "#{Dir.pwd}/bzr-cookbooks/fake", ref: 'revno:2'
       """
     * I successfully run `berks install`
     * the output should contain "Using fake (2.3.4)"
