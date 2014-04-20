@@ -61,6 +61,8 @@ module Berkshelf
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
           FileUtils.stub(:mkdir_p)
+          expect(subject).to receive(:bzr).with('branch')
+          Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
           expect(subject).to receive(:bzr).with('update -r revno:2')
           subject.download
         end
