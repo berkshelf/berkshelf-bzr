@@ -60,7 +60,7 @@ module Berkshelf
       context 'when the revision is not cached' do
         it 'clones the repository' do
           subject.stub(:cached?).and_return(false)
-          FileUtils.stub(:mkdir_p) { |args, &b| b.call }
+          FileUtils.stub(:mkdir_p)
           expect(subject).to receive(:bzr).with('update -r revno:2')
           subject.download
         end
