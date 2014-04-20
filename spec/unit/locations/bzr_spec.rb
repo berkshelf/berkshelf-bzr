@@ -50,8 +50,8 @@ module Berkshelf
 
       context 'when the repository is cached' do
         it 'pulls a new version' do
-          subject.stub(:cached?).and_return(true)
           Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
+          subject.stub(:cached?).and_return(true)
           expect(subject).to receive(:bzr).with('pull')
           subject.download
         end
