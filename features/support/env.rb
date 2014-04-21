@@ -9,6 +9,13 @@ Before do
   @aruba_timeout_seconds = 30
 
   ENV['BERKSHELF_PATH'] = tmp_path
+
+  ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
+#  clean_tmp_path
+  Berkshelf.initialize_filesystem
+  Berkshelf::CookbookStore.instance.initialize_filesystem
+#  reload_configs
+  Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 end
 
 def tmp_path

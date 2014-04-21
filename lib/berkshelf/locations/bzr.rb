@@ -159,8 +159,8 @@ module Berkshelf
     #
     # @return [Pathname, nil]
     def install_path
-      Pathname.new(Berkshelf.cookbook_store.storage_path
-        .join("#{dependency.name}-#{revision.gsub('-', '_')}"))
+      Berkshelf.cookbook_store.storage_path
+        .join("#{dependency.name}-#{revision.gsub('-', '_')}")
     end
 
     # The path where this bazaar repository is cached.

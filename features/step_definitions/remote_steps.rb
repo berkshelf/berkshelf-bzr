@@ -1,3 +1,34 @@
+Given(/^I write a Berksfile with:$/) do |string|
+  File.open(File.join(tmp_path, 'Berksfile'), 'w') do |f|
+    f.write string
+  end
+end
+
+
+Then(/^the cookbook store should have the bzr cookbooks:$/) do |cookbooks|
+  cookbooks.raw.each do |name, version, sha1|
+    Berkshelf.cookbook_store.storage_path.join("#{name}-#{sha1}").exist?
+  end
+end
+
+Given(/^the cookbook store has the bzr cookbooks:$/) do |cookbooks|
+  cookbooks.raw.each do |name, version, sha|
+    folder   = "#{name}-#{sha}"
+    metadata = File.join(folder, 'metadata.rb')
+
+    create_dir(folder)
+    write_file(metadata, [
+      "name '#{name}'",
+      "version '#{version}'"
+    ].join("\n"))
+  end
+end
+
+Then /^the exit status should be "(.+)"$/ do |name|
+  error = name.split('::').reduce(Berkshelf) { |klass, id| klass.const_get(id) }
+  assert_exit_status(error.status_code)
+end
+
 Given /^a remote bazaar cookbook named "(\w+)"$/ do |name|
   path = File.join(tmp_path, 'bzr-cookbooks', name)
   FileUtils.mkdir_p(path)
@@ -13,11 +44,11 @@ Given /^a remote bazaar cookbook named "(\w+)"$/ do |name|
     end
 
     bzr('add')
-    bzr_commit('Initial commit')
+    bzr_commit('Initial commit')    
   end
 end
 
-Given /^a remote bazaar cookbook named "(\w+)" with a ref named "(\w+)"$/ do |name, ref|
+Given(/^a remote bazaar cookbook named "(.*?)" with a ref named "(.*?)"$/) do |name, ref|
   path = File.join(tmp_path, 'bzr-cookbooks', name)
   steps %Q|Given a remote bazaar cookbook named "#{name}"|
 
@@ -41,3 +72,5 @@ end
 def bzr_commit(message)
   bzr %|commit -m "#{message}"|
 end
+
+
