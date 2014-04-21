@@ -1,6 +1,7 @@
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install bzr
+  - bzr whoami 'Test <test@test.net>'
 
 rvm:
   - 1.9.3
