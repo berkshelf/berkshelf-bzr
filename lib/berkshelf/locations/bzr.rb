@@ -16,9 +16,15 @@ module Berkshelf
     end
 
     class BzrCommandError < BzrError
-      def initialize(command, path = nil)
-        super "Bzr error: command `bzr #{command}` failed. If this error " \
-          "persists, try removing the cache directory at `#{path}'."
+      def initialize(command, path = nil, stderr = nil)
+        out = "Bzr error: command `bzr #{command}` failed. If this error "
+        out << "persists, try removing the cache directory at `#{path}'."
+        
+        if stderr
+          out << "Output from the command:\n\n"
+          out << stderr
+        end
+        super(out)
       end
     end
 
@@ -34,60 +40,50 @@ module Berkshelf
       @ref      = options[:ref] || 'last:'
     end
 
-    # Download the cookbook from the remote bzr repository
+    # Determine if this revision is installed.
     #
-    # @return [CachedCookbook]
-    def download
-      if installed?
-        cookbook = CachedCookbook.from_store_path(install_path)
-        return super(cookbook)
-      end
+    # @return [Boolean]
+    def installed?
+      revision && install_path.exist?
+    end
+
+    # Install this bzr cookbook into the cookbook store. This method leverages
+    # a cached bzr copy and a scratch directory to prevent bad cookbooks from
+    # making their way into the cookbook store.
+    #
+    # @see BaseLocation#install
+    def install
 
       if cached?
-        # Update and checkout the correct ref
         Dir.chdir(cache_path) do
           bzr %|pull|
         end
       else
-        # Ensure the cache directory is present before doing anything
         FileUtils.mkdir_p(cache_path.dirname)
         bzr %|branch #{uri} #{cache_path}|
       end
 
       Dir.chdir(cache_path) do
-        bzr %|update -r #{revision || ref}|
-        stdout = bzr %|testament --strict|
-        testament = stdout.match(/revision-id: (.*)/)
-        unless testament[1]
-          raise BazaarError.new('Unable to find bazaar revid')
-        end
-        @revision ||= 'revid:' + testament[1]
+        bzr %|update -r #{@revision || @ref}|
       end
+      @revision ||= revid(cache_path)
+      
+      # Validate the scratched path is a valid cookbook
+      validate_cached!(cache_path)
 
-      # Validate the thing we are copying is a Chef cookbook
-      validate_cookbook!(cache_path)
-
-      # Remove the current cookbook at this location (this is required or else
-      # FileUtils will copy into a subdirectory in the next step)
-      FileUtils.rm_rf(install_path)
-
-      # Create the containing parent directory
-      FileUtils.mkdir_p(install_path.parent)
-
-      # Copy whatever is in the current cache over to the store
+      # If we got this far, we should copy
+      FileUtils.rm_rf(install_path) if install_path.exist?
       FileUtils.cp_r(cache_path, install_path)
-
-      # Remove the .bzr directory to save storage space
-      if (bzr_path = install_path.join('.bzr')).exist?
-        FileUtils.rm_r(bzr_path)
-      end
-
-      cookbook = CachedCookbook.from_store_path(install_path)
-      super(cookbook)
+      install_path.chmod(0777 & ~File.umask)
     end
 
-    def scm_location?
-      true
+    # @see BaseLocation#cached_cookbook
+    def cached_cookbook
+      if installed?
+        @cached_cookbook ||= CachedCookbook.from_path(install_path)
+      else
+        nil
+      end
     end
 
     def ==(other)
@@ -125,11 +121,30 @@ module Berkshelf
       response = Buff::ShellOut.shell_out(%|bzr #{command}|)
 
       if error && !response.success?
-        raise BzrCommandError.new(command, cache_path)
+        raise BzrCommandError.new(command, cache_path, stderr = response.stderr)
       end
 
       response.stdout.strip
     end
+
+    # Get revid from bazaar repository.
+    # @param [String] path
+    #   the path to the bazaar repository
+    # @return [String | nil]
+    #   the bazaar revid
+    def revid(path)
+      Dir.chdir(path) do
+        stdout = bzr %|testament --strict|
+        if stdout
+          testament = stdout.match(/revision-id: (.*)/)
+          unless testament[1]
+            raise BazaarError.new('Unable to find bazaar revid')
+          end
+          'revid:' + testament[1]
+        end
+      end
+    end
+
 
     # Determine if this bazaar repo has already been downloaded.
     #
@@ -138,20 +153,14 @@ module Berkshelf
       cache_path.exist?
     end
 
-    # Determine if this revision is installed.
-    #
-    # @return [Boolean]
-    def installed?
-      revision && install_path.exist?
-    end
 
     # The path where this cookbook would live in the store, if it were
     # installed.
     #
     # @return [Pathname, nil]
     def install_path
-      Berkshelf.cookbook_store.storage_path
-        .join("#{dependency.name}-#{revision.gsub('-', '_')}")
+      Pathname.new(Berkshelf.cookbook_store.storage_path
+        .join("#{dependency.name}-#{revision.gsub('-', '_')}"))
     end
 
     # The path where this bazaar repository is cached.
@@ -161,5 +170,6 @@ module Berkshelf
       Pathname.new(Berkshelf.berkshelf_path)
         .join('.cache', 'bzr', Digest::SHA1.hexdigest(uri))
     end
+
   end
 end

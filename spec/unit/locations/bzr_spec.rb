@@ -29,50 +29,67 @@ module Berkshelf
 
     end
 
-    describe '#download' do
+    describe '#installed?' do
+      it 'returns false when there is no revision' do
+        subject.stub(:revision).and_return(nil)
+        expect(subject.installed?).to be_false
+      end
+
+      it 'returns false when the install_path does not exist' do
+        subject.stub(:revision).and_return('abcd1234')
+        subject.stub(:install_path).and_return(double(exist?: false))
+        expect(subject.installed?).to be_false
+      end
+
+      it 'returns true when the location is installed' do
+        subject.stub(:revision).and_return('abcd1234')
+        subject.stub(:install_path).and_return(double(exist?: true))
+        expect(subject.installed?).to be_true
+      end
+    end
+
+    describe '#install' do
       before do
         CachedCookbook.stub(:from_store_path)
         FileUtils.stub(:cp_r)
+        File.stub(:chmod)
         subject.stub(:validate_cached!)
         subject.stub(:validate_cookbook!)
         subject.stub(:bzr)
       end
 
-      context 'when the cookbook is already installed' do
-        it 'loads the cookbook from the store' do
-          subject.stub(:installed?).and_return(true)
-          expect(CachedCookbook).to receive(:from_store_path)
-          expect(subject).to receive(:validate_cached!)
-          expect(subject).to_not receive(:bzr)
-          subject.download
-        end
-      end
-
       context 'when the repository is cached' do
         it 'pulls a new version' do
-          Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
+          Dir.stub(:chdir).and_yield
           subject.stub(:cached?).and_return(true)
           expect(subject).to receive(:bzr).with('pull')
-          subject.download
+          subject.install
         end
       end
 
       context 'when the revision is not cached' do
         it 'clones the repository' do
+          Dir.stub(:chdir).and_yield
           subject.stub(:cached?).and_return(false)
           FileUtils.stub(:mkdir_p)
-          expect(subject).to receive(:bzr).with('branch')
-          Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
-          expect(subject).to receive(:bzr).with('update -r revno:2')
-          subject.download
+          expect(subject).to receive(:bzr).with(/branch https:\/\/repo.com .*/)
+          subject.install
         end
       end
     end
 
-    describe '#scm_location?' do
-      it 'returns true' do
-        instance = described_class.new(dependency, bzr: 'https://repo.com')
-        expect(instance).to be_scm_location
+    describe '#cached_cookbook' do
+      it 'returns nil if the cookbook is not installed' do
+        subject.stub(:installed?).and_return(false)
+        expect(subject.cached_cookbook).to be_nil
+      end
+
+      it 'returns the cookbook at the install_path' do
+        subject.stub(:installed?).and_return(true)
+        CachedCookbook.stub(:from_path)
+
+        expect(CachedCookbook).to receive(:from_path).once
+        subject.cached_cookbook
       end
     end
 
@@ -123,8 +140,9 @@ module Berkshelf
       end
 
       it 'raises an error if the command fails' do
-        subject.stub(:`)
-        $?.stub(:success?).and_return(false)
+
+        shell_out = double('shell_out', success?: false, stderr: nil)
+        Buff::ShellOut.stub(:shell_out).and_return(shell_out)
         expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrCommandError)
       end
     end
