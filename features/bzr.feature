@@ -59,7 +59,7 @@ Feature: Installing from a bazaar location
       extension 'bzr'
 
       cookbook 'fake', bzr: "#{Dir.pwd}/bzr-cookbooks/fake", ref: 'revno:1'
-      cookbook "doesntexist", bzr: "bzr+ssh://github.com/asdjhfkljashflkjashfakljsf"
+      cookbook "doesntexist", bzr: "asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
     Then the output should contain:
