@@ -31,17 +31,20 @@ extension 'bzr'
 Use the exposed `:bzr` key to define your sources:
 
 ```ruby
-cookbook 'bacon', bzr: 'https://bitbucket.org/meats/bacon'
+cookbook 'mycookbook', bzr: 'lp:mycookbook'
 ```
 
 You may also specify a `ref` (see output of bzr help revisionspec):
 
 ```ruby
-cookbook 'bacon', bzr: 'https://bitbucket.org/meats/bacon', ref: 'revno:7'
+cookbook 'mycookbook', bzr: 'lp:mycookbook', ref: 'revno:7'
 ```
 
 License & Authors
 -----------------
+The code is an adaptation of Mercurial berkshelf's extension
+(https://github.com/berkshelf/berkshelf-hg)
+
 - Author: David Chauviere (d_chauviere@yahoo.fr)
 - Author: Seth Vargo (sethvargo@gmail.com)
 - Author: Manuel Ryan (ryan@shamu.ch)
