@@ -6,7 +6,7 @@ module Berkshelf
 
     subject do
       described_class.new(dependency, bzr: 'https://repo.com', 
-                          ref: 'revno:2:', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
+                          ref: 'revno:2', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
     end
 
     describe '.initialize' do
@@ -127,6 +127,7 @@ module Berkshelf
         expect(subject.to_lock).to eq <<-EOH.gsub(/^ {8}/, '')
             bzr: https://repo.com
             revision: revid:test@test.net-20140320213448-r0103d8bgjlu5jyz
+            ref: revno:2
         EOH
       end
     end

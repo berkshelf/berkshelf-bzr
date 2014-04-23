@@ -93,12 +93,13 @@ module Berkshelf
     end
 
     def to_s
-      "#{uri} (at ref: #{ref[0...7]})"
+      "#{uri} (at ref: #{ref})"
     end
 
     def to_lock
       out =  "    bzr: #{uri}\n"
       out << "    revision: #{revision}\n"
+      out << "    ref: #{ref}\n" if ref
       out
     end
 
