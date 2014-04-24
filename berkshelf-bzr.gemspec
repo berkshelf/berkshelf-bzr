@@ -12,9 +12,7 @@ Gem::Specification.new do |spec|
     'Manuel Ryan'
   ]
   spec.email         = [
-    'd_chauviere@yahoo.fr',
-    'sethvargo@gmail.com',
-    'ryan@shamu.ch'
+    'd_chauviere@yahoo.fr'
   ]
   spec.summary       = 'Bazaar support for Berkshelf'
   spec.description   = 'A Berkshelf plugin that adds support for downloading ' \
@@ -34,6 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'aruba', '~> 0.5'
   spec.add_development_dependency 'rspec', '~> 2.14'
 
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'bundler', '~> 1.5'
+  spec.add_development_dependency 'rake', '~> 0.9'
 end
