@@ -122,7 +122,8 @@ module Berkshelf
       response = Buff::ShellOut.shell_out(%|bzr #{command}|)
 
       if error && !response.success?
-        raise BzrCommandError.new(command, cache_path, stderr = response.stderr)
+        # All bzr output is on stdout, not stderr
+        raise BzrCommandError.new(command, cache_path, stderr = response.stdout)
       end
 
       response.stdout.strip

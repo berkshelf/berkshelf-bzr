@@ -34,7 +34,6 @@ module Berkshelf
         subject.stub(:revision).and_return(nil)
         expect(subject.installed?).to be_false
       end
-
       it 'returns false when the install_path does not exist' do
         subject.stub(:revision).and_return('abcd1234')
         subject.stub(:install_path).and_return(double(exist?: false))
@@ -142,7 +141,7 @@ module Berkshelf
 
       it 'raises an error if the command fails' do
 
-        shell_out = double('shell_out', success?: false, stderr: nil)
+        shell_out = double('shell_out', success?: false, stdout: 'bzr: ERROR: Not a branch: "foo".', stderr: nil)
         Buff::ShellOut.stub(:shell_out).and_return(shell_out)
         expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrCommandError)
       end
