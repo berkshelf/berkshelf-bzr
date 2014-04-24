@@ -6,14 +6,8 @@ require 'berkshelf/bzr/version'
 Gem::Specification.new do |spec|
   spec.name          = 'berkshelf-bzr'
   spec.version       = Berkshelf::Bzr::VERSION
-  spec.authors       = [
-    'David Chauviere',
-    'Seth Vargo',
-    'Manuel Ryan'
-  ]
-  spec.email         = [
-    'd_chauviere@yahoo.fr'
-  ]
+  spec.authors       = [ 'David Chauviere' ]
+  spec.email         = [ 'd_chauviere@yahoo.fr' ]
   spec.summary       = 'Bazaar support for Berkshelf'
   spec.description   = 'A Berkshelf plugin that adds support for downloading ' \
                        'Chef cookbooks from Bazaar locations.'
