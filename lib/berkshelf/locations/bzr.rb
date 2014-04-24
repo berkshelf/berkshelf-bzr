@@ -19,7 +19,7 @@ module Berkshelf
       def initialize(command, path = nil, stderr = nil)
         out = "Bzr error: command `bzr #{command}` failed. If this error "
         out << "persists, try removing the cache directory at `#{path}'."
-        
+
         if stderr
           out << "Output from the command:\n\n"
           out << stderr
@@ -67,7 +67,7 @@ module Berkshelf
         bzr %|update -r #{@revision || @ref}|
       end
       @revision ||= revid(cache_path)
-      
+
       # Validate the scratched path is a valid cookbook
       validate_cached!(cache_path)
 
