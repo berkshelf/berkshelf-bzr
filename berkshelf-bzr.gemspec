@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = 'Bazaar support for Berkshelf'
   spec.description   = 'A Berkshelf plugin that adds support for downloading ' \
                        'Chef cookbooks from Bazaar locations.'
-  spec.homepage      = 'https://github.com/Da-Wei/berkshelf-bzr'
+  spec.homepage      = 'https://github.com/berkshelf/berkshelf-bzr'
   spec.license       = 'Apache 2.0'
 
   spec.files         = `git ls-files`.split($/)
