@@ -5,7 +5,7 @@ require 'berkshelf'
 
 module Berkshelf
   class BzrLocation < BaseLocation
-    class BzrError < BerkshelfError; status_code(600); end
+    class BzrError < BerkshelfError; set_status_code(600); end
 
     class BzrNotInstalled < BzrError
       def initialize
@@ -53,7 +53,6 @@ module Berkshelf
     #
     # @see BaseLocation#install
     def install
-
       if cached?
         Dir.chdir(cache_path) do
           bzr %|pull|
@@ -147,14 +146,12 @@ module Berkshelf
       end
     end
 
-
     # Determine if this bazaar repo has already been downloaded.
     #
     # @return [Boolean]
     def cached?
       cache_path.exist?
     end
-
 
     # The path where this cookbook would live in the store, if it were
     # installed.
@@ -172,6 +169,5 @@ module Berkshelf
       Pathname.new(Berkshelf.berkshelf_path)
         .join('.cache', 'bzr', Digest::SHA1.hexdigest(uri))
     end
-
   end
 end
