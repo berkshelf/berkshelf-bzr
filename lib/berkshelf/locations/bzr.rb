@@ -152,7 +152,9 @@ module Berkshelf
     def retrieve_branch(output)
       result = output.match(/repository branch: (.*)/)
       return result.captures if result != nil
-      output.match(/parent branch: (.*)/).captures
+      result = output.match(/parent branch: (.*)/)
+      return result.captures if result != nil
+      ''
     end
 
     # Determine if a bazaar cached location is valid
