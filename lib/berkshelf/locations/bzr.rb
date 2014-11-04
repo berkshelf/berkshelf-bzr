@@ -174,7 +174,6 @@ module Berkshelf
         true
       end
     end
-    def valid?
 
     # Determine if this bazaar repo has already been downloaded.
     #
