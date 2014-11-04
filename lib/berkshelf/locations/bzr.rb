@@ -53,7 +53,7 @@ module Berkshelf
     #
     # @see BaseLocation#install
     def install
-      if cached?
+      if cached? && valid?
         Dir.chdir(cache_path) do
           bzr %|pull|
         end
@@ -143,6 +143,37 @@ module Berkshelf
           end
           'revid:' + testament[1]
         end
+      end
+    end
+
+    # Retrieve repository branch name or parent branch from a info output
+    #
+    # @return [string]
+    def retrieve_branch(output)
+      result = output.match(/repository branch: (.*)/)
+      return result.captures if result != nil
+      result = output.match(/parent branch: (.*)/)
+      return result.captures if result != nil
+      ''
+    end
+
+    # Determine if a bazaar cached location is valid
+    # Needed when we use alias in Berksfile
+    #
+    # @return [Boolean]
+    def valid?
+      # Get information
+      stdout_cached=''
+      Dir.chdir(cache_path) do
+        stdout_cached = retrieve_branch(bzr %|info|)
+      end
+      stdout_new = retrieve_branch(bzr %|info #{uri}|)
+      # Check if alias has been moved to a new release
+      if stdout_cached != stdout_new then
+        FileUtils.rm_rf cache_path
+        false
+      else
+        true
       end
     end
 

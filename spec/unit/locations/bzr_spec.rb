@@ -61,6 +61,7 @@ module Berkshelf
         it 'pulls a new version' do
           Dir.stub(:chdir).and_yield
           subject.stub(:cached?).and_return(true)
+          subject.stub(:valid?).and_return(true)
           expect(subject).to receive(:bzr).with('pull')
           subject.install
         end
