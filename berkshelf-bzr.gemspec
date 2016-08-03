@@ -19,8 +19,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
+  spec.required_ruby_version     = '>= 2.1.0'
   # Runtime dependencies
-  spec.add_dependency 'berkshelf', '~> 3.1'
+  spec.add_dependency 'berkshelf', '~> 4.0'
 
   # Development dependencies
   spec.add_development_dependency 'aruba', '~> 0.5'
