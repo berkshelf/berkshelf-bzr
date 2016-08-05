@@ -1,8 +1,8 @@
 Berkshelf Bzr
 ============
-[![Gem Version](https://badge.fury.io/rb/berkshelf-bzr.png)](http://badge.fury.io/rb/berkshelf-bzr)
-[![Build Status](https://travis-ci.org/berkshelf/berkshelf-bzr.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf-bzr)
-[![Code Climate](https://codeclimate.com/github/berkshelf/berkshelf-bzr.png)](https://codeclimate.com/github/berkshelf/berkshelf-bzr)
+[![Gem Version](https://badge.fury.io/rb/berkshelf-bzr.svg)](http://badge.fury.io/rb/berkshelf-bzr)
+[![Build Status](https://travis-ci.org/berkshelf/berkshelf-bzr.svg?branch=master)](https://travis-ci.org/berkshelf/berkshelf-bzr)
+[![Code Climate](https://codeclimate.com/github/berkshelf/berkshelf-bzr.svg)](https://codeclimate.com/github/berkshelf/berkshelf-bzr)
 
 Berkshelf Bzr is a Berkshelf extension that adds support for downloading cookbooks from Bazaar locations.
 
