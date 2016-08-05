@@ -5,7 +5,7 @@ module Berkshelf
     let(:dependency) { double(name: 'bacon') }
 
     subject do
-      described_class.new(dependency, bzr: 'https://repo.com', 
+      described_class.new(dependency, bzr: 'https://repo.com',
                           ref: 'revno:2', revision: 'revid:test@test.net-20140320213448-r0103d8bgjlu5jyz')
     end
 
@@ -31,37 +31,37 @@ module Berkshelf
 
     describe '#installed?' do
       it 'returns false when there is no revision' do
-        subject.stub(:revision).and_return(nil)
-        expect(subject.installed?).to be_false
+        allow(subject).to receive(:revision).and_return(nil)
+        expect(subject.installed?).to be_falsey
       end
       it 'returns false when the install_path does not exist' do
-        subject.stub(:revision).and_return('abcd1234')
-        subject.stub(:install_path).and_return(double(exist?: false))
-        expect(subject.installed?).to be_false
+        allow(subject).to receive(:revision).and_return('abcd1234')
+        allow(subject).to receive(:install_path).and_return(double(exist?: false))
+        expect(subject.installed?).to be false
       end
 
       it 'returns true when the location is installed' do
-        subject.stub(:revision).and_return('abcd1234')
-        subject.stub(:install_path).and_return(double(exist?: true))
-        expect(subject.installed?).to be_true
+        allow(subject).to receive(:revision).and_return('abcd1234')
+        allow(subject).to receive(:install_path).and_return(double(exist?: true))
+        expect(subject.installed?).to be true
       end
     end
 
     describe '#install' do
       before do
-        CachedCookbook.stub(:from_store_path)
-        FileUtils.stub(:cp_r)
-        File.stub(:chmod)
-        subject.stub(:validate_cached!)
-        subject.stub(:validate_cookbook!)
-        subject.stub(:bzr)
+        allow(CachedCookbook).to receive(:from_store_path)
+        allow(FileUtils).to receive(:cp_r)
+        allow(File).to receive(:chmod)
+        allow(subject).to receive(:validate_cached!)
+        allow(subject).to receive(:validate_cookbook!)
+        allow(subject).to receive(:bzr)
       end
 
       context 'when the repository is cached' do
         it 'pulls a new version' do
-          Dir.stub(:chdir).and_yield
-          subject.stub(:cached?).and_return(true)
-          subject.stub(:valid?).and_return(true)
+          allow(Dir).to receive(:chdir).and_yield
+          allow(subject).to receive(:cached?).and_return(true)
+          allow(subject).to receive(:valid?).and_return(true)
           expect(subject).to receive(:bzr).with('pull')
           subject.install
         end
@@ -69,9 +69,9 @@ module Berkshelf
 
       context 'when the revision is not cached' do
         it 'clones the repository' do
-          Dir.stub(:chdir).and_yield
-          subject.stub(:cached?).and_return(false)
-          FileUtils.stub(:mkdir_p)
+          allow(Dir).to receive(:chdir).and_yield
+          allow(subject).to receive(:cached?).and_return(false)
+          allow(FileUtils).to receive(:mkdir_p)
           expect(subject).to receive(:bzr).with(/branch https:\/\/repo.com .*/)
           subject.install
         end
@@ -80,13 +80,13 @@ module Berkshelf
 
     describe '#cached_cookbook' do
       it 'returns nil if the cookbook is not installed' do
-        subject.stub(:installed?).and_return(false)
+        allow(subject).to receive(:installed?).and_return(false)
         expect(subject.cached_cookbook).to be_nil
       end
 
       it 'returns the cookbook at the install_path' do
-        subject.stub(:installed?).and_return(true)
-        CachedCookbook.stub(:from_path)
+        allow(subject).to receive(:installed?).and_return(true)
+        allow(CachedCookbook).to receive(:from_path)
 
         expect(CachedCookbook).to receive(:from_path).once
         subject.cached_cookbook
@@ -101,17 +101,17 @@ module Berkshelf
       end
 
       it 'returns false when the other location is not an BzrLocation' do
-        other.stub(:is_a?).and_return(false)
+        allow(other).to receive(:is_a?).and_return(false)
         expect(subject).to_not eq(other)
       end
 
       it 'returns false when the uri is different' do
-        other.stub(:uri).and_return('different')
+        allow(other).to receive(:uri).and_return('different')
         expect(subject).to_not eq(other)
       end
 
       it 'returns false when the ref is different' do
-        other.stub(:ref).and_return('different')
+        allow(other).to receive(:ref).and_return('different')
         expect(subject).to_not eq(other)
       end
     end
@@ -136,14 +136,14 @@ module Berkshelf
       before { described_class.send(:public, :bzr) }
 
       it 'raises an error if Bazaar is not installed' do
-        Berkshelf.stub(:which).and_return(false)
+        allow(Berkshelf).to receive(:which).and_return(false)
         expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrNotInstalled)
       end
 
       it 'raises an error if the command fails' do
-
+        allow(Berkshelf).to receive(:which).and_return(true)
         shell_out = double('shell_out', success?: false, stdout: 'bzr: ERROR: Not a branch: "foo".', stderr: nil)
-        Buff::ShellOut.stub(:shell_out).and_return(shell_out)
+        allow(Buff::ShellOut).to receive(:shell_out).and_return(shell_out)
         expect { subject.bzr('foo') }.to raise_error(BzrLocation::BzrCommandError)
       end
     end
