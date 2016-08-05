@@ -1,31 +1,35 @@
-Berkshelf Bzr
-============
-[![Gem Version](https://badge.fury.io/rb/berkshelf-bzr.svg)](http://badge.fury.io/rb/berkshelf-bzr)
-[![Build Status](https://travis-ci.org/berkshelf/berkshelf-bzr.svg?branch=master)](https://travis-ci.org/berkshelf/berkshelf-bzr)
-[![Code Climate](https://codeclimate.com/github/berkshelf/berkshelf-bzr.svg)](https://codeclimate.com/github/berkshelf/berkshelf-bzr)
+# Berkshelf Bzr
+
+[![Gem Version](https://badge.fury.io/rb/berkshelf-bzr.svg)](http://badge.fury.io/rb/berkshelf-bzr) [![Build Status](https://travis-ci.org/berkshelf/berkshelf-bzr.svg?branch=master)](https://travis-ci.org/berkshelf/berkshelf-bzr) [![Code Climate](https://codeclimate.com/github/berkshelf/berkshelf-bzr.svg)](https://codeclimate.com/github/berkshelf/berkshelf-bzr)
 
 Berkshelf Bzr is a Berkshelf extension that adds support for downloading cookbooks from Bazaar locations.
 
-Installation
-------------
+## Installation
+
 Add this line to your application's Gemfile:
 
-    gem 'berkshelf-bzr'
+```
+gem 'berkshelf-bzr'
+```
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install berkshelf-bzr
+```
+$ gem install berkshelf-bzr
+```
 
-Usage
------
+## Usage
+
 Activate the extension in your `Berksfile`:
 
 ```ruby
-source 'https://api.berkshelf.com'
+source 'https://supermarket.chef.io'
 extension 'bzr'
 ```
 
@@ -41,10 +45,9 @@ You may also specify a `ref` (see output of bzr help revisionspec):
 cookbook 'mycookbook', bzr: 'lp:mycookbook', ref: 'revno:7'
 ```
 
-License & Authors
------------------
-The code is an adaptation of Mercurial berkshelf's extension
-(https://github.com/berkshelf/berkshelf-hg)
+## License & Authors
+
+The code is an adaptation of Mercurial berkshelf's extension (<https://github.com/berkshelf/berkshelf-hg>)
 
 - Author: David Chauviere (d_chauviere@yahoo.fr)
 
