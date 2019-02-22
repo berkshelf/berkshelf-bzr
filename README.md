@@ -4,6 +4,10 @@
 
 Berkshelf Bzr is a Berkshelf extension that adds support for downloading cookbooks from Bazaar locations.
 
+### Status
+
+This software project is no longer under active development as it has no active maintainers. The software may continue to work for some or all use cases, but issues filed in GitHub will most likely not be triaged. If a new maintainer is interested in working on this project please come chat with us in #chef-dev on Chef Community Slack.
+
 ## Installation
 
 Add this line to your application's Gemfile:
